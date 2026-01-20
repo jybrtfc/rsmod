@@ -3,6 +3,7 @@ package org.rsmod.server.shared.module
 import com.google.inject.Provider
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.stream.Collectors
 import kotlin.io.path.PathWalkOption
 import kotlin.io.path.isDirectory
 import kotlin.io.path.name
@@ -190,7 +191,10 @@ private fun Path.shallowDirectoryMap(): ShallowDirectoryMap {
     return ShallowDirectoryMap(map)
 }
 
-private fun Path.listFiles(): List<Path> = Files.list(this).filter(Files::isRegularFile).toList()
+private fun Path.listFiles(): List<Path> =
+    Files.list(this).use { stream ->
+        stream.filter(Files::isRegularFile).collect(Collectors.toList())
+    }
 
 private data class ShallowDirectoryMap(private val directories: Map<String, List<Path>>) :
     Map<String, List<Path>> by directories {
